@@ -42,14 +42,14 @@ examples,visit [flink-connector-lettuce-redis-test](https://github.com/dahai1996
 
 ### look up:
 
-```java
-        // set some key-value to redis
-        sync.set("1","{\"id\":\"11\",\"info\":\"info1\",\"grand\":\"\"}");
-                sync.set("2","{\"id\":\"22\",\"info\":\"info2\",\"grand\":\"\",\"other\":\"other\"}");
-                sync.set("3","{\"id\":\"33\",\"info\":\"info3\"}");
-                sync.set("4","{\"info\":\"info4\",\"id\":\"44\"}");
-                sync.set("5","{}");
-                sync.set("6","{\"info\":\"info6\",\"id\":\"66\",\"grand\":\"grand6\"}");
+```
+    // set some key-value to redis
+    sync.set("1","{\"id\":\"11\",\"info\":\"info1\",\"grand\":\"\"}");
+    sync.set("2","{\"id\":\"22\",\"info\":\"info2\",\"grand\":\"\",\"other\":\"other\"}");
+    sync.set("3","{\"id\":\"33\",\"info\":\"info3\"}");
+    sync.set("4","{\"info\":\"info4\",\"id\":\"44\"}");
+    sync.set("5","{}");
+    sync.set("6","{\"info\":\"info6\",\"id\":\"66\",\"grand\":\"grand6\"}");
 ```
 
 ```java
