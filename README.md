@@ -1,13 +1,14 @@
 # flink-connector-lettuce-redis
 
-flink connect for redis
+flink connector for redis
 
-use luttuce to connect to redis
+use lettuce to connect to redis.
 
 ## todo:
- - support redis-cluster
- - support other redis commands
- - support streaming api
+
+- support redis-cluster
+- support other redis commands
+- support streaming api
 
 ## dependency:
 
@@ -128,7 +129,15 @@ we get the result:
         TableResult tableResult=tEnv.executeSql(sql3);
         tableResult.getJobClient().get().getJobExecutionResult().get();
 
-        Assert.assertEquals("{\"v1\":\"v1\",\"v2\":\"v2\"}",sync.get("setName1"));
-        Assert.assertEquals("{\"v1\":\"v21\",\"v2\":\"v22\"}",sync.get("setName2"));
-        Assert.assertEquals("{\"v1\":\"v31\",\"v2\":\"v32\"}",sync.get("setName3"));
+        System.out.println(sync.get("setName1"));
+        System.out.println(sync.get("setName2"));
+        System.out.println(sync.get("setName3"));
+```
+
+we get the result:
+
+```shell
+{"v1":"v1","v2":"v2"}
+{"v1":"v21","v2":"v22"}
+{"v1":"v31","v2":"v32"}
 ```
