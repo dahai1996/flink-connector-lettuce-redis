@@ -5,7 +5,6 @@ import io.lettuce.core.RedisURI;
 import io.lettuce.core.RedisURI.Builder;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
-import java.time.Duration;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.EnvironmentSettings;
 import org.apache.flink.table.api.TableResult;
@@ -15,6 +14,8 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import redis.embedded.RedisServer;
+
+import java.time.Duration;
 
 public class SinkSQLTest {
     private static RedisServer redisServer;

@@ -1,8 +1,5 @@
 package org.apache.flink.streaming.connectors.redis.table;
 
-import static org.apache.flink.table.types.logical.utils.LogicalTypeChecks.hasRoot;
-
-import java.util.stream.IntStream;
 import org.apache.flink.api.common.serialization.SerializationSchema;
 import org.apache.flink.streaming.connectors.redis.common.config.ClientConfig;
 import org.apache.flink.streaming.connectors.redis.common.config.SinkConfig;
@@ -22,6 +19,10 @@ import org.apache.flink.table.types.logical.utils.LogicalTypeChecks;
 import org.apache.flink.table.types.utils.DataTypeUtils;
 import org.apache.flink.types.RowKind;
 import org.apache.flink.util.Preconditions;
+
+import java.util.stream.IntStream;
+
+import static org.apache.flink.table.types.logical.utils.LogicalTypeChecks.hasRoot;
 
 /**
  * @author sqh

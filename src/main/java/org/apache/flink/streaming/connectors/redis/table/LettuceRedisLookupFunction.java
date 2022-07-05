@@ -1,8 +1,5 @@
 package org.apache.flink.streaming.connectors.redis.table;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.concurrent.CompletableFuture;
 import org.apache.flink.api.common.serialization.DeserializationSchema;
 import org.apache.flink.streaming.connectors.redis.common.config.ClientConfig;
 import org.apache.flink.streaming.connectors.redis.common.config.LookUpConfig;
@@ -12,6 +9,10 @@ import org.apache.flink.table.functions.AsyncTableFunction;
 import org.apache.flink.table.functions.FunctionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @author sqh

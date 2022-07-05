@@ -1,7 +1,5 @@
 package org.apache.flink.streaming.connectors.redis.table;
 
-import java.util.HashSet;
-import java.util.Set;
 import org.apache.flink.api.common.serialization.DeserializationSchema;
 import org.apache.flink.api.common.serialization.SerializationSchema;
 import org.apache.flink.configuration.ConfigOption;
@@ -22,6 +20,9 @@ import org.apache.flink.table.factories.DynamicTableSinkFactory;
 import org.apache.flink.table.factories.DynamicTableSourceFactory;
 import org.apache.flink.table.factories.FactoryUtil;
 import org.apache.flink.table.factories.SerializationFormatFactory;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author sqh

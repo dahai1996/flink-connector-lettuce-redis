@@ -1,6 +1,5 @@
 package org.apache.flink.streaming.connectors.redis.executor;
 
-import java.io.Serializable;
 import org.apache.flink.api.common.functions.Function;
 import org.apache.flink.streaming.connectors.redis.common.config.ClientConfig;
 import org.apache.flink.streaming.connectors.redis.common.config.SinkConfig;
@@ -9,6 +8,8 @@ import org.apache.flink.streaming.connectors.redis.table.LettuceRedisDynamicTabl
 import org.apache.flink.table.data.RowData;
 import org.apache.flink.table.types.DataType;
 import org.apache.flink.types.RowKind;
+
+import java.io.Serializable;
 
 /**
  * @author sqh

@@ -7,12 +7,6 @@ import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.async.RedisAsyncCommands;
 import io.lettuce.core.api.sync.RedisCommands;
 import io.lettuce.core.codec.ByteArrayCodec;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.flink.api.common.serialization.DeserializationSchema;
 import org.apache.flink.calcite.shaded.com.google.common.cache.Cache;
@@ -27,6 +21,13 @@ import org.apache.flink.table.data.StringData;
 import org.apache.flink.types.RowKind;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author sqh
