@@ -4,6 +4,11 @@ flink connect for redis
 
 use luttuce to connect to redis
 
+## todo:
+ - support redis-cluster
+ - support other redis commands
+ - support streaming api
+
 ## dependency:
 
 | name    | version     | desc                          |
@@ -52,7 +57,7 @@ examples,visit [flink-connector-lettuce-redis-test](https://github.com/dahai1996
     sync.set("6","{\"info\":\"info6\",\"id\":\"66\",\"grand\":\"grand6\"}");
 ```
 
-```java
+```
         StreamExecutionEnvironment env=StreamExecutionEnvironment.getExecutionEnvironment();
 
         EnvironmentSettings environmentSettings=
@@ -102,7 +107,7 @@ we get the result:
 
 ### sink:
 
-```java
+```
         StreamExecutionEnvironment env=StreamExecutionEnvironment.getExecutionEnvironment();
 
         EnvironmentSettings environmentSettings=
