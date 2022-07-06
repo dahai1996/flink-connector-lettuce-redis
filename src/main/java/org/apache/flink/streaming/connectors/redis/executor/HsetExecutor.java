@@ -1,20 +1,14 @@
 package org.apache.flink.streaming.connectors.redis.executor;
 
-import io.lettuce.core.RedisClient;
-import io.lettuce.core.RedisURI;
-import io.lettuce.core.RedisURI.Builder;
-import io.lettuce.core.api.StatefulRedisConnection;
-import io.lettuce.core.api.async.RedisAsyncCommands;
-import io.lettuce.core.api.sync.RedisCommands;
-import io.lettuce.core.codec.ByteArrayCodec;
+import io.lettuce.core.cluster.api.sync.RedisClusterCommands;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.flink.api.common.serialization.DeserializationSchema;
 import org.apache.flink.calcite.shaded.com.google.common.cache.Cache;
 import org.apache.flink.calcite.shaded.com.google.common.cache.CacheBuilder;
-import org.apache.flink.streaming.connectors.redis.common.config.ClientConfig;
-import org.apache.flink.streaming.connectors.redis.common.config.LookUpConfig;
-import org.apache.flink.streaming.connectors.redis.common.config.SinkConfig;
-import org.apache.flink.streaming.connectors.redis.table.LettuceRedisDataType;
+import org.apache.flink.streaming.connectors.redis.client.LettuceRedisClient;
+import org.apache.flink.streaming.connectors.redis.config.ClientConfig;
+import org.apache.flink.streaming.connectors.redis.config.LookUpConfig;
+import org.apache.flink.streaming.connectors.redis.config.SinkConfig;
 import org.apache.flink.table.data.GenericRowData;
 import org.apache.flink.table.data.RowData;
 import org.apache.flink.table.data.StringData;
@@ -35,21 +29,12 @@ import java.util.concurrent.TimeUnit;
 public class HsetExecutor implements LettuceRedisSinkExecutor, LettuceRedisLookUpExecutor {
 
     private static final Logger LOG = LoggerFactory.getLogger(HsetExecutor.class);
-    RedisClient redisClient;
-    StatefulRedisConnection<byte[], byte[]> connect;
-    private RedisCommands<byte[], byte[]> sync;
-    private RedisAsyncCommands<byte[], byte[]> async;
-    private LettuceRedisDataType hset;
     private int ttl;
     private Cache<String, RowData> cache;
     private boolean isCache;
     private String format;
     private int maxRetryTimes;
-
-    @Override
-    public LettuceRedisDataType getDataType() {
-        return this.hset;
-    }
+    private LettuceRedisClient redisClient;
 
     @Override
     public int getTtl() {
@@ -64,6 +49,7 @@ public class HsetExecutor implements LettuceRedisSinkExecutor, LettuceRedisLookU
     @Override
     public void invoke(byte[] keyName, byte[] fieldName, byte[] value, RowKind rowKind)
             throws InterruptedException {
+        RedisClusterCommands<byte[], byte[]> sync = redisClient.getSync();
         for (int i = 0; i <= maxRetryTimes; i++) {
             try {
                 if (rowKind == RowKind.INSERT || rowKind == RowKind.UPDATE_AFTER) {
@@ -84,25 +70,15 @@ public class HsetExecutor implements LettuceRedisSinkExecutor, LettuceRedisLookU
 
     @Override
     public void open(ClientConfig clientConfig, SinkConfig sinkConfig) {
-        RedisURI uri =
-                Builder.redis(clientConfig.getHostname(), clientConfig.getPort())
-                        .withDatabase(clientConfig.getDatabase())
-                        .build();
-        this.redisClient = RedisClient.create(uri);
-        this.connect = redisClient.connect(new ByteArrayCodec());
-        this.sync = connect.sync();
+        redisClient = LettuceRedisClient.create(clientConfig);
+        redisClient.open();
         this.ttl = sinkConfig.getValueTtl();
         this.maxRetryTimes = sinkConfig.getMaxRetryTimes();
     }
 
     @Override
     public void close() {
-        if (connect != null) {
-            connect.close();
-        }
-        if (redisClient != null) {
-            redisClient.shutdown();
-        }
+        redisClient.close();
     }
 
     @Override
@@ -122,15 +98,8 @@ public class HsetExecutor implements LettuceRedisSinkExecutor, LettuceRedisLookU
 
     @Override
     public void open(ClientConfig clientConfig, LookUpConfig lookUpConfig) {
-
-        RedisURI uri =
-                Builder.redis(clientConfig.getHostname(), clientConfig.getPort())
-                        .withDatabase(clientConfig.getDatabase())
-                        .build();
-
-        this.redisClient = RedisClient.create(uri);
-        this.connect = redisClient.connect(new ByteArrayCodec());
-        this.async = connect.async();
+        redisClient = LettuceRedisClient.create(clientConfig);
+        redisClient.open();
         this.cache =
                 lookUpConfig.getCacheMaxRows() == -1 || lookUpConfig.getCacheTtl() == -1
                         ? null
@@ -162,7 +131,9 @@ public class HsetExecutor implements LettuceRedisSinkExecutor, LettuceRedisLookU
             CompletableFuture<Collection<RowData>> result,
             DeserializationSchema<RowData> deserializationSchema,
             Object... keys) {
-        async.hget(keys[0].toString().getBytes(), keys[1].toString().getBytes())
+        redisClient
+                .getAsync()
+                .hget(keys[0].toString().getBytes(), keys[1].toString().getBytes())
                 .thenAccept(
                         value -> {
                             if (value == null) {

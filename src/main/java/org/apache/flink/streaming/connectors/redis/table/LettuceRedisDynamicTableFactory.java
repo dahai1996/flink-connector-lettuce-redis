@@ -5,10 +5,9 @@ import org.apache.flink.api.common.serialization.SerializationSchema;
 import org.apache.flink.configuration.ConfigOption;
 import org.apache.flink.configuration.ConfigOptions;
 import org.apache.flink.configuration.ReadableConfig;
-import org.apache.flink.streaming.connectors.redis.common.config.ClientConfig;
-import org.apache.flink.streaming.connectors.redis.common.config.LookUpConfig;
-import org.apache.flink.streaming.connectors.redis.common.config.SinkConfig;
-import org.apache.flink.table.api.ValidationException;
+import org.apache.flink.streaming.connectors.redis.config.ClientConfig;
+import org.apache.flink.streaming.connectors.redis.config.LookUpConfig;
+import org.apache.flink.streaming.connectors.redis.config.SinkConfig;
 import org.apache.flink.table.catalog.ResolvedSchema;
 import org.apache.flink.table.connector.format.DecodingFormat;
 import org.apache.flink.table.connector.format.EncodingFormat;
@@ -21,8 +20,14 @@ import org.apache.flink.table.factories.DynamicTableSourceFactory;
 import org.apache.flink.table.factories.FactoryUtil;
 import org.apache.flink.table.factories.SerializationFormatFactory;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+
+import static org.apache.flink.streaming.connectors.redis.validate.ValidateUtils.validateCommand;
+import static org.apache.flink.streaming.connectors.redis.validate.ValidateUtils.validateFormat;
+import static org.apache.flink.streaming.connectors.redis.validate.ValidateUtils.validateModel;
+import static org.apache.flink.streaming.connectors.redis.validate.ValidateUtils.validateTtl;
 
 /**
  * @author sqh
@@ -33,29 +38,34 @@ public class LettuceRedisDynamicTableFactory
     public static final String SINK_PREFIX = "sink.";
     public static final String LOOKUP_PREFIX = "lookup.";
 
+    public static final ConfigOption<String> MODEL =
+            ConfigOptions.key("client.model")
+                    .stringType()
+                    .defaultValue("single")
+                    .withDescription("redis model: single or cluster");
     public static final ConfigOption<Integer> DATABASE =
-            ConfigOptions.key("database")
+            ConfigOptions.key("client.database")
                     .intType()
                     .defaultValue(0)
                     .withDescription("Optional database for connect to redis");
 
-    public static final ConfigOption<String> HOSTNAME =
-            ConfigOptions.key("hostname")
+    public static final ConfigOption<String> HOST =
+            ConfigOptions.key("client.host")
                     .stringType()
                     .noDefaultValue()
                     .withDescription("redis hostName");
 
+    public static final ConfigOption<String> PASSWORD =
+            ConfigOptions.key("client.password")
+                    .stringType()
+                    .defaultValue("")
+                    .withDescription("redis password");
+
     public static final ConfigOption<String> COMMAND =
-            ConfigOptions.key("command")
+            ConfigOptions.key("client.command")
                     .stringType()
                     .defaultValue("set")
                     .withDescription("redis command: set or hset");
-
-    public static final ConfigOption<Integer> PORT =
-            ConfigOptions.key("port")
-                    .intType()
-                    .defaultValue(6379)
-                    .withDescription("redis port,default 6379");
 
     public static final ConfigOption<Integer> SINK_MAX_RETRIES =
             ConfigOptions.key("sink.max-retries")
@@ -98,36 +108,17 @@ public class LettuceRedisDynamicTableFactory
     public DynamicTableSink createDynamicTableSink(Context context) {
         FactoryUtil.TableFactoryHelper helper = FactoryUtil.createTableFactoryHelper(this, context);
         // discover a suitable decoding format
-        // 目前支持： json,csv
         ReadableConfig config = helper.getOptions();
-        String formatConfig = config.get(FactoryUtil.FORMAT);
-        String commandString = config.get(COMMAND);
-        if (!supportFormatOptions().contains(formatConfig)) {
-            throw new ValidationException(
-                    String.format(
-                            "do not support this format : %s ,only support format : json,csv.",
-                            formatConfig));
-        }
-        // 格式相关检查
-        if (!supportCommandOptions().contains(commandString)) {
-            throw new ValidationException(
-                    String.format(
-                            "do not support this command : %s ,only support command : set,hset.",
-                            commandString));
-        }
-        // hset 模式不支持设置expire
-        Integer integer = config.get(SINK_VALUE_TTL);
-        if (integer != 0 && LettuceRedisDataType.HSET.getName().equals(commandString)) {
-            throw new ValidationException(
-                    "when command is 'hset',do not support 'sink.value.ttl'.You can set 'sink.value.ttl' to 0,it means no expire time");
-        }
+
+        validateFormat(config.get(FactoryUtil.FORMAT));
+        validateCommand(config.get(COMMAND));
+        validateModel(config.get(MODEL));
+        validateTtl(config.get(COMMAND), config.get(SINK_VALUE_TTL));
         EncodingFormat<SerializationSchema<RowData>> format =
                 helper.discoverEncodingFormat(SerializationFormatFactory.class, FactoryUtil.FORMAT);
-
         helper.validateExcept(LOOKUP_PREFIX);
 
         ResolvedSchema resolvedSchema = context.getCatalogTable().getResolvedSchema();
-        // 构造配置
         ClientConfig clientConfig = getClientConfig(config);
         SinkConfig sinkConfig = getSinkConfig(config);
 
@@ -138,34 +129,19 @@ public class LettuceRedisDynamicTableFactory
     public DynamicTableSource createDynamicTableSource(Context context) {
         FactoryUtil.TableFactoryHelper helper = FactoryUtil.createTableFactoryHelper(this, context);
         // discover a suitable decoding format
-        // 目前支持： json,csv
         ReadableConfig config = helper.getOptions();
-        String formatConfig = config.get(FactoryUtil.FORMAT);
-        String commandString = config.get(COMMAND);
-        if (!supportFormatOptions().contains(formatConfig)) {
-            throw new ValidationException(
-                    String.format(
-                            "do not support this format : %s ,only support format : json,csv.",
-                            formatConfig));
-        }
-        // 格式相关检查
-        if (!supportCommandOptions().contains(commandString)) {
-            throw new ValidationException(
-                    String.format(
-                            "do not support this command : %s ,only support command : set,hset.",
-                            commandString));
-        }
 
+        validateFormat(config.get(FactoryUtil.FORMAT));
+        validateCommand(config.get(COMMAND));
+        validateModel(config.get(MODEL));
         DecodingFormat<DeserializationSchema<RowData>> format =
                 helper.discoverDecodingFormat(
                         DeserializationFormatFactory.class, FactoryUtil.FORMAT);
-
         // validate  options except sink.* or json.* or csv.*
         helper.validateExcept(SINK_PREFIX);
 
         ResolvedSchema resolvedSchema = context.getCatalogTable().getResolvedSchema();
 
-        // 构造配置
         ClientConfig clientConfig = getClientConfig(config);
         LookUpConfig lookUpConfig = getLookUpConfig(config);
 
@@ -181,25 +157,10 @@ public class LettuceRedisDynamicTableFactory
     @Override
     public Set<ConfigOption<?>> requiredOptions() {
         final Set<ConfigOption<?>> options = new HashSet<>();
-        options.add(HOSTNAME);
+        options.add(HOST);
         options.add(COMMAND);
         options.add(FactoryUtil.FORMAT);
-
-        return options;
-    }
-
-    public Set<String> supportFormatOptions() {
-        final Set<String> options = new HashSet<>();
-        options.add("json");
-        options.add("csv");
-
-        return options;
-    }
-
-    public Set<String> supportCommandOptions() {
-        final Set<String> options = new HashSet<>();
-        options.add(LettuceRedisDataType.SET.getName());
-        options.add(LettuceRedisDataType.HSET.getName());
+        options.add(MODEL);
 
         return options;
     }
@@ -208,9 +169,7 @@ public class LettuceRedisDynamicTableFactory
     public Set<ConfigOption<?>> optionalOptions() {
         final Set<ConfigOption<?>> options = new HashSet<>();
         options.add(DATABASE);
-        options.add(HOSTNAME);
-        options.add(PORT);
-        options.add(COMMAND);
+        options.add(PASSWORD);
         options.add(LOOKUP_CACHE_MAX_ROWS);
         options.add(LOOKUP_CACHE_TTL);
         options.add(LOOKUP_MAX_RETRIES);
@@ -230,12 +189,20 @@ public class LettuceRedisDynamicTableFactory
     }
 
     private ClientConfig getClientConfig(ReadableConfig config) {
+        // split host to get hosts and ports
+        String[] hostPorts = config.get(HOST).replace(" ", "").split(",");
+        String[] hosts = Arrays.stream(hostPorts).map(s -> s.split(":")[0]).toArray(String[]::new);
+        int[] ports =
+                Arrays.stream(hostPorts).mapToInt(s -> Integer.parseInt(s.split(":")[1])).toArray();
+
         return new ClientConfig.Builder()
-                .setHostname(config.get(HOSTNAME))
-                .setPort(config.get(PORT))
+                .setHosts(hosts)
+                .setPorts(ports)
                 .setCommand(config.get(COMMAND))
                 .setFormat(config.get(FactoryUtil.FORMAT))
                 .setDatabase(config.get(DATABASE))
+                .setPassword(config.get(PASSWORD))
+                .setModel(config.get(MODEL))
                 .build();
     }
 

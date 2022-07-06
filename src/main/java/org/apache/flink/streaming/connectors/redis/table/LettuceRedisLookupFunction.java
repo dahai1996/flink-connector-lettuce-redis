@@ -1,8 +1,8 @@
 package org.apache.flink.streaming.connectors.redis.table;
 
 import org.apache.flink.api.common.serialization.DeserializationSchema;
-import org.apache.flink.streaming.connectors.redis.common.config.ClientConfig;
-import org.apache.flink.streaming.connectors.redis.common.config.LookUpConfig;
+import org.apache.flink.streaming.connectors.redis.config.ClientConfig;
+import org.apache.flink.streaming.connectors.redis.config.LookUpConfig;
 import org.apache.flink.streaming.connectors.redis.executor.LettuceRedisLookUpExecutor;
 import org.apache.flink.table.data.RowData;
 import org.apache.flink.table.functions.AsyncTableFunction;

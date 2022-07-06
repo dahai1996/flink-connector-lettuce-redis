@@ -1,9 +1,8 @@
 package org.apache.flink.streaming.connectors.redis.executor;
 
 import org.apache.flink.api.common.functions.Function;
-import org.apache.flink.streaming.connectors.redis.common.config.ClientConfig;
-import org.apache.flink.streaming.connectors.redis.common.config.SinkConfig;
-import org.apache.flink.streaming.connectors.redis.table.LettuceRedisDataType;
+import org.apache.flink.streaming.connectors.redis.config.ClientConfig;
+import org.apache.flink.streaming.connectors.redis.config.SinkConfig;
 import org.apache.flink.streaming.connectors.redis.table.LettuceRedisDynamicTableSink;
 import org.apache.flink.table.data.RowData;
 import org.apache.flink.table.types.DataType;
@@ -15,13 +14,6 @@ import java.io.Serializable;
  * @author sqh
  */
 public interface LettuceRedisSinkExecutor extends Function, Serializable {
-
-    /**
-     * 获取执行器对应的redis数据类型
-     *
-     * @return 枚举类 {@link LettuceRedisDataType}
-     */
-    LettuceRedisDataType getDataType();
 
     /**
      * 获取设置的redis key 超时时间

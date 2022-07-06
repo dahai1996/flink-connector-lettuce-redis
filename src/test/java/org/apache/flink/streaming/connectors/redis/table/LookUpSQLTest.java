@@ -55,7 +55,7 @@ public class LookUpSQLTest {
 
         String ddlWb =
                 "create table dim_table(key string, id string,info string,grand string) with ( 'connector'='lettuce-redis', "
-                        + "'hostname'='127.0.0.1','port'='63792','command'='set','format'='json','json.fail-on-missing-field'='false','json.map-null-key.mode'='LITERAL','json.map-null-key.literal'='HNULL')";
+                        + "'client.host'='127.0.0.1:63792','client.command'='set','format'='json','json.fail-on-missing-field'='false','json.map-null-key.mode'='LITERAL','json.map-null-key.literal'='HNULL')";
 
         String source =
                 "create table source_table(username string, level string, proctime as procTime()) "
@@ -96,7 +96,7 @@ public class LookUpSQLTest {
 
         String ddlWb =
                 "create table dim_table(hsetName String,fieldName string, id int,info string,grand string) with ( 'connector'='lettuce-redis', "
-                        + "'hostname'='127.0.0.1','port'='63792','command'='hset','format'='json','json.fail-on-missing-field'='false','json.map-null-key.mode'='LITERAL','json.map-null-key.literal'='HNULL')";
+                        + "'client.host'='127.0.0.1:63792','client.command'='hset','format'='json','json.fail-on-missing-field'='false','json.map-null-key.mode'='LITERAL','json.map-null-key.literal'='HNULL')";
 
         String source =
                 "create table source_table(username string, level string, proctime as procTime()) "
@@ -140,7 +140,7 @@ public class LookUpSQLTest {
 
         String ddlWb =
                 "create table dim_table(key string, id string,info string,grand string) with ( 'connector'='lettuce-redis', "
-                        + "'hostname'='127.0.0.1','port'='63792','command'='set','format'='csv','csv.ignore-parse-errors'='true','csv.null-literal'='true')";
+                        + "'client.host'='127.0.0.1:63792','client.command'='set','format'='csv','csv.ignore-parse-errors'='true','csv.null-literal'='true')";
 
         String source =
                 "create table source_table(username string, level string, proctime as procTime()) "
@@ -181,7 +181,7 @@ public class LookUpSQLTest {
 
         String ddlWb =
                 "create table dim_table(hsetName String,fieldName string, id int,info string,grand string) with ( 'connector'='lettuce-redis', "
-                        + "'hostname'='127.0.0.1','port'='63792','command'='hset','format'='csv','csv.ignore-parse-errors'='true','csv.null-literal'='true')";
+                        + "'client.host'='127.0.0.1:63792','client.command'='hset','format'='csv','csv.ignore-parse-errors'='true','csv.null-literal'='true')";
 
         String source =
                 "create table source_table(username string, level string, proctime as procTime()) "
@@ -233,11 +233,11 @@ public class LookUpSQLTest {
 
         String ddlWb =
                 "create table dim_table(key string, id int,info string,grand string) with ( 'connector'='lettuce-redis', "
-                        + "'hostname'='127.0.0.1','port'='63792','command'='set','format'='json','json.fail-on-missing-field'='false','json.map-null-key.mode'='LITERAL','json.map-null-key.literal'='HNULL')";
+                        + "'client.host'='127.0.0.1:63792','client.command'='set','format'='json','json.fail-on-missing-field'='false','json.map-null-key.mode'='LITERAL','json.map-null-key.literal'='HNULL')";
 
         String ddlWb2 =
                 "create table dim_table2(hsetName String,fieldName string, id int,info string,grand string) with ( 'connector'='lettuce-redis', "
-                        + "'hostname'='127.0.0.1','port'='63792','command'='hset','format'='json','json.fail-on-missing-field'='false','json.map-null-key.mode'='LITERAL','json.map-null-key.literal'='HNULL')";
+                        + "'client.host'='127.0.0.1:63792','client.command'='hset','format'='json','json.fail-on-missing-field'='false','json.map-null-key.mode'='LITERAL','json.map-null-key.literal'='HNULL')";
 
         String source =
                 "create table source_table(username string, level string, proctime as procTime()) "

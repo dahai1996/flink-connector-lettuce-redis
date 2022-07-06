@@ -1,8 +1,8 @@
 package org.apache.flink.streaming.connectors.redis.table;
 
 import org.apache.flink.api.common.serialization.SerializationSchema;
-import org.apache.flink.streaming.connectors.redis.common.config.ClientConfig;
-import org.apache.flink.streaming.connectors.redis.common.config.SinkConfig;
+import org.apache.flink.streaming.connectors.redis.config.ClientConfig;
+import org.apache.flink.streaming.connectors.redis.config.SinkConfig;
 import org.apache.flink.streaming.connectors.redis.executor.HsetExecutor;
 import org.apache.flink.streaming.connectors.redis.executor.LettuceRedisSinkExecutor;
 import org.apache.flink.streaming.connectors.redis.executor.SetExecutor;

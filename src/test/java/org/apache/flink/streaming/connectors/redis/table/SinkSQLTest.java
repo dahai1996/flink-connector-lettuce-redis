@@ -77,7 +77,7 @@ public class SinkSQLTest {
 
         String ddl =
                 "create table sink_redis(setName VARCHAR, v1 String,v2 String) with ( 'connector'='lettuce-redis', "
-                        + "'hostname'='127.0.0.1','port'='63792','command'='set','format'='json','database'='1',"
+                        + "'client.host'='127.0.0.1:63792','client.command'='set','format'='json','client.database'='1',"
                         + "'json.fail-on-missing-field'='true')";
 
         tEnv.executeSql(ddl);
@@ -106,7 +106,7 @@ public class SinkSQLTest {
 
         String ddl =
                 "create table sink_redis(setName VARCHAR, v1 String,v2 String) with ( 'connector'='lettuce-redis', "
-                        + "'hostname'='127.0.0.1','port'='63792','command'='set','format'='csv','database'='1')";
+                        + "'client.host'='127.0.0.1:63792','client.command'='set','format'='csv','client.database'='1')";
 
         tEnv.executeSql(ddl);
         String sql = " insert into sink_redis select * from (values ('setName1', 'v1','v2'))";
@@ -134,7 +134,7 @@ public class SinkSQLTest {
 
         String ddl =
                 "create table sink_redis(keyName string,fieldName string, v1 String,v2 String,v3 String) with ( 'connector'='lettuce-redis', "
-                        + "'hostname'='127.0.0.1','port'='63792','command'='hset','format'='json','database'='1',"
+                        + "'client.host'='127.0.0.1:63792','client.command'='hset','format'='json','client.database'='1',"
                         + "'json.fail-on-missing-field'='true')";
 
         tEnv.executeSql(ddl);
@@ -169,7 +169,7 @@ public class SinkSQLTest {
 
         String ddl =
                 "create table sink_redis(keyName string,fieldName string, v1 String,v2 String,msg String) with ( 'connector'='lettuce-redis', "
-                        + "'hostname'='127.0.0.1','port'='63792','command'='hset','format'='csv','database'='1')";
+                        + "'client.host'='127.0.0.1:63792','client.command'='hset','format'='csv','client.database'='1')";
 
         tEnv.executeSql(ddl);
         String sql =

@@ -3,8 +3,8 @@ package org.apache.flink.streaming.connectors.redis.executor;
 import org.apache.flink.api.common.functions.Function;
 import org.apache.flink.api.common.serialization.DeserializationSchema;
 import org.apache.flink.calcite.shaded.com.google.common.cache.Cache;
-import org.apache.flink.streaming.connectors.redis.common.config.ClientConfig;
-import org.apache.flink.streaming.connectors.redis.common.config.LookUpConfig;
+import org.apache.flink.streaming.connectors.redis.config.ClientConfig;
+import org.apache.flink.streaming.connectors.redis.config.LookUpConfig;
 import org.apache.flink.table.data.RowData;
 
 import java.io.Serializable;

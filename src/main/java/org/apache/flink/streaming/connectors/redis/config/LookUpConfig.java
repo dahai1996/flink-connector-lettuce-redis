@@ -1,4 +1,4 @@
-package org.apache.flink.streaming.connectors.redis.common.config;
+package org.apache.flink.streaming.connectors.redis.config;
 
 import java.io.Serializable;
 
